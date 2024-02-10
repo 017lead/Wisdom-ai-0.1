@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Page Title</title>
+    <style>
+        #overlay{
+            background-color: #719c02;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+       
+        
+       
+        
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            border: 1px solid #e8e5e5b5;
+            max-height: 290px;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column-reverse; /* Reverse the order to show the latest messages at the bottom */
+        }
+
+
+        #chat-messages li {
+            margin: 5px;
+            padding: 10px;
+            border-radius: 5px;
+            overflow: auto;
+        }
+        .test{
+            padding-left: 10px;
+            font-size: small;
+        
+        }
+        
+      
+          .conter{
+            position: absolute;
+           display: flex;
+           justify-content: center;
+            max-width: 200px ;
+            max-height: 200px;
+            background-color: #007bff;
+          }
+
+        .user-input  {
+           
+            
+
+
+        align-items: center;
+        justify-items: end;
+       width: 500px;
+       outline: none;
+      
+          font-size: 1.2em;
+          padding: 0 10px;
+       line-height: 25px;
+        border-radius: 10px;
+        border: 0.1px solid #e2e2e2f0;
+         background: #f0efefd6;
+           transition: 0.1s ease;
+         z-index: 1111;
+         resize: none;
+
+        }
+       
+       
+
+        
+        .send  {
+            
+            width: 80px;
+            margin: 10px;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            
+            transition: background-color 0.3s ease;
+        }
+        #Report{
+            
+           padding-top: 14px;
+            font-size: small;
+
+            
+            color: burlywood;
+        }
+        
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header, main, footer {
+            padding: 20px;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            header, main, footer {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class = "continar12"> 
+            <h1 class="test">  Beta Testing: 0.0.1 </h1>
+            <a id = "Report" href= "https://forms.gle/oNUpVPp7xvdY8JvM9" target="_blank">Report a bug</a>
+               </div>
+    </div>
+
+    <h1>Your Website Title</h1>
+    </header>
+
+    <main>
+        <section>
+            <h2>Section 1</h2>
+
+           
+
+
+
+
+                
+            
+        
+                       <ul class = "chat-messages" id= "chat-messages"></ul>
+  
+            
+                    <script>
+            
+                        function selectUser() {
+                            var dropdown = document.getElementById("userDropdown");
+                            var selectedOption = dropdown.options[dropdown.selectedIndex];
+                            var selectedValue = selectedOption.value;
+                            var selectedUrl = selectedOption.getAttribute("data-url");
+                    
+                            if (selectedValue !== "" && selectedUrl) {
+                                window.location.href = selectedUrl;
+                            }
+                            }
+            
+            
+            
+            
+            
+                        </script>
+            
+            
+            
+            
+            
+            
+                        <div id="overlay">
+                            <h2>Caution.</h2>
+                            <p>  This AI is in testing phase. It may not be always reilable,
+                                 it may produce inaccurate and false information.</p>
+                            <button onclick="closeWarning()">OK</button>
+                          </div>
+            <script>
+              function closeWarning() {
+                document.getElementById('overlay').style.display = 'none';
+              }
+            </script>
+            
+            
+                      
+                <script defer>
+                    const API_KEY = "sk-YjE5ZDYxMzctZDQ2ZS00MThjLThiNGQtZWYyOWEyM2E4ZGRm";
+            
+                    const interact = (request) =>
+                        fetch(`https://general-runtime.voiceflow.com/state/user/${encodeURI($("#name").val())}/interact
+                        `, {
+                            method: 'POST',
+                            headers: { Authorization: API_KEY, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ request }),
+                        })
+                        .then((res) => res.json())
+                        .then((trace) => {
+                            console.log("API RESPONSE BODY:", trace);
+                            trace.forEach((trace) => {
+                                if (trace.type === 'speak' || trace.type === 'text') {
+                                    $("#chat-messages").append(`<li>${trace.payload.message}</li>`);
+                                } else if (trace.type === 'end') {
+                                    $("#chat-messages").append(`<li><b>The End!</b></li>`);
+                                }
+                            });
+                            // Scroll to the bottom of the chat messages
+                            $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
+                        });
+            
+                    interact({ type: 'launch' });
+            
+                    async function handleSend() {
+                        const userInput = $("#user-input").val();
+                        $("#chat-messages").append(`<li><strong>You:</strong> ${userInput}</li>`);
+                        $("#user-input").val('');
+            
+                        interact({ type: 'text', payload: userInput });
+                    }
+                   
+                    $("#send").on("click", handleSend);
+            
+                   
+                </script>
+                
+        </section>
+        <textarea class = "user-input" id="user-input" name="user-input" type="text" placeholder="Enter your response..."   ></textarea>
+                   
+                   
+        <button class= "send" id="send" type="button">Send</button>
+        
+       
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
